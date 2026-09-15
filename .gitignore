@@ -1,6 +1,7 @@
 # 依赖与构建产物
 node_modules/
 dist/
+dist-gh/
 .vite/
 
 # 校验脚本产出的截图（体积大，不入库）

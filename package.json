@@ -9,6 +9,7 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "i18n": "node scripts/i18n-check.mjs",
+    "routes": "node scripts/static-routes.mjs",
     "lang": "node scripts/lang-matrix.mjs",
     "verify": "node scripts/verify.mjs",
     "inspect": "node scripts/inspect.mjs",

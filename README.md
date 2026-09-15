@@ -213,6 +213,31 @@ VITE_BASE=/giraf/ npm run build  # 部署到子路径
 - 腾讯云 CloudBase 静态托管：子路径部署时同时设置 `VITE_BASE`，并确保 404 回退到 `index.html`
 - 未匹配的地址会由路由兜底重定向到 `/`（主语言首页）
 
+### GitHub Pages（仓库自带的工作流）
+
+仓库 `sivan-xiang/GIRAF` 是 **project page**，站点位于 **`/GIRAF/` 子路径**，
+因此构建必须覆盖 `base`，否则资源会按 `/assets/*` 请求而 404。
+
+`.github/workflows/deploy-pages.yml` 在每次推送到 `main` 时自动执行：
+`npm ci` → `VITE_BASE=/GIRAF/ npm run build` → `node scripts/static-routes.mjs dist` →
+`actions/upload-pages-artifact` → `actions/deploy-pages`。
+
+**为什么需要 `static-routes.mjs`：** 纯静态托管上，直接访问 `/GIRAF/services`、`/GIRAF/de/contact`
+这类深链默认返回 **HTTP 404**（即使 `404.html` 兜底让页面照常渲染，状态码仍是 404，
+搜索引擎与社交分享预览会当成死链）。该脚本为「语言前缀 × 页面路径」的每条组合写出实体
+`index.html`，使 32 条已知路由全部返回 **200**；未知路径仍由 `404.html` 兜底，行为不变。
+路由表与语言表**从源码解析**，解析数量不符会报错退出，避免源文件结构调整后静默漏生成。
+
+本地等价复现（Windows 请在 Git Bash 中执行）：
+
+```bash
+VITE_BASE=/GIRAF/ npm run build && npm run routes -- dist
+```
+
+> 首次部署需在仓库 **Settings → Pages → Source** 选择 **GitHub Actions**
+> （工作流已带 `enablement: true` 尝试自动开启；若账号权限不足则需手动点一次）。
+> 发布地址：<https://sivan-xiang.github.io/GIRAF/> 
+
 **上线前需核对**：`index.html` 中 `og:image` / `twitter:image` 写死了
 `https://www.girafsail-logistics.com/og-image.png`。若最终域名不同，需同步修改这三处 URL
 （社交平台抓取器不执行 JS，无法像 `og:url` 那样运行时替换）。
