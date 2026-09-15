@@ -1,7 +1,6 @@
 name: Deploy to GitHub Pages
 
-# 每次推送到 main 自动重建并发布；
-# 也可在 Actions 页面手动触发（workflow_dispatch）。
+# 每次推送到 main 自动重建并发布；也可在 Actions 页面手动触发（workflow_dispatch）。
 on:
   push:
     branches: [main]
@@ -12,7 +11,7 @@ permissions:
   pages: write
   id-token: write
 
-# 同一时间只保留一次发布，新的推送取消尚未完成的旧任务
+# 同一时间只保留一次发布，新推送会取消尚未完成的旧任务
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -21,9 +20,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -31,25 +30,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 项目页部署在 /<repo>/ 子路径下，必须覆盖 vite.config.js 的默认 base，
+      # 项目页部署在 /GIRAF/ 子路径下，必须覆盖 vite.config.js 的默认 base，
       # 否则产出的资源引用是 /assets/*，在子路径下会 404。
       - name: Build
         run: VITE_BASE=/GIRAF/ npm run build
 
-      # 纯静态托管上，SPA 深链（/GIRAF/services、/GIRAF/de/contact）默认返回 404。
-      # 两步处理：
+      # 纯静态托管上 SPA 深链（/GIRAF/services、/GIRAF/de/contact）默认返回 404：
       #   1) static-routes.mjs 为每条路由写出实体 index.html → 深链返回 200；
-      #   2) 404.html 兜底未知路径 → 仍由前端路由接管，不出现托管商的 404 页。
+      #   2) 404.html 兜底未知路径 → 不出现托管商的 404 页。
       - name: Materialise routes for static hosting
         run: node scripts/static-routes.mjs dist
 
-      - uses: actions/configure-pages@v5
+      # ⚠️ 首次部署的已知边界：创建 Pages 站点需要**仓库管理员**权限，
+      # 而 GITHUB_TOKEN 永远不具备该权限（报 Resource not accessible by integration）。
+      # 因此首次运行会卡在此步 —— 需在 Settings → Pages → Source 手动选一次
+      # "GitHub Actions"；此后每次推送都会全自动完成。
+      - uses: actions/configure-pages@v6
         with:
-          # 若仓库尚未开启 Pages，尝试由工作流直接开启（无需手动点设置）。
-          # 若权限不足会失败，此时需在 Settings → Pages 手动选 "GitHub Actions"。
           enablement: true
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -61,4 +61,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
