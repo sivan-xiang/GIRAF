@@ -1,0 +1,29 @@
+{
+  "name": "giraf-overseas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "GIRAF — the international brand of LONGSAIL International Logistics. English-primary corporate site with DE, ES and TH, built to extend to further languages.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "i18n": "node scripts/i18n-check.mjs",
+    "lang": "node scripts/lang-matrix.mjs",
+    "verify": "node scripts/verify.mjs",
+    "inspect": "node scripts/inspect.mjs",
+    "measure": "node scripts/measure.mjs",
+    "og": "node scripts/og-image.mjs"
+  },
+  "dependencies": {
+    "ogl": "^1.0.11",
+    "vue": "^3.5.13",
+    "vue-i18n": "^11.1.1",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "playwright-core": "^1.49.1",
+    "vite": "^6.0.7"
+  }
+}

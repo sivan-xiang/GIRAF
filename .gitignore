@@ -1,0 +1,26 @@
+# 依赖与构建产物
+node_modules/
+dist/
+.vite/
+
+# 校验脚本产出的截图（体积大，不入库）
+_shots/
+
+# 上游参考素材（Vue Bits 官方组件源码等），仅本地参考
+_ref/
+
+# 智能体工作记录（项目内部笔记，不进公开仓库）
+.workbuddy/
+
+# 编辑器与系统
+.DS_Store
+Thumbs.db
+*.local
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# 日志
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
