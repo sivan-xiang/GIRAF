@@ -177,7 +177,7 @@ const networkPreview = computed(() => {
             v-reveal="i * 30"
           >
             <span class="mtile__n">{{ String(i + 1).padStart(2, '0') }}</span>
-            <span class="icon-box" :class="i % 3 === 1 ? 'icon-box--coral' : ''">
+            <span class="icon-box">
               <AppIcon :name="s.icon" />
             </span>
             <span class="mtile__name">{{ s.name }}</span>
@@ -475,8 +475,31 @@ const networkPreview = computed(() => {
   color: var(--coral);
   transform: translateX(3px);
 }
-.mtile--coral:hover .icon-box {
-  background: var(--coral-soft);
+/*
+  图标色取自各服务**自身**的 accent（`.mtile--*` 早由此数据带上），与该服务详情页主色一致。
+  ⚠️ 原先写的是 `i % 3 === 1 ? 'icon-box--coral' : ''`：五列栅格下珊瑚色恰好落在
+  Air / E-commerce / Customs 三个**非 coral** 服务上，而 accent 真为 coral 的
+  Ocean / Inland / Destination / Bonded 反倒是白图标 —— 看上去就是「莫名其妙有两个格子是红的」。
+  现改为数据驱动，并把颜色落到图标本身：静置 = 中性底 + 强调色图标，悬停 = 底色染上该服务的柔光。
+  （三种强调色在 --bg-tint 上的对比度：coral 5.5:1 / steel 6.5:1 / sand 9.4:1，均高于图形 3:1。）
+*/
+.mtile {
+  --tile-accent: var(--coral);
+  --tile-accent-soft: var(--coral-soft);
+}
+.mtile--sand {
+  --tile-accent: var(--sand);
+  --tile-accent-soft: var(--sand-soft);
+}
+.mtile--steel {
+  --tile-accent: var(--steel);
+  --tile-accent-soft: var(--steel-soft);
+}
+.mtile .icon-box {
+  color: var(--tile-accent);
+}
+.mtile:hover .icon-box {
+  background: var(--tile-accent-soft);
 }/* 中等屏：5 列会挤到换行不整，改用两列 */
 @media (max-width: 1080px) {
   .matrix {

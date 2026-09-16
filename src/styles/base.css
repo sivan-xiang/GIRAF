@@ -29,6 +29,13 @@
   --coral-200: #ffc9c9;
   --coral-soft: rgba(250, 89, 89, 0.14);
   --sand: #f0b45a;
+  /* 服务 accent 三色（coral / sand / steel）的补色与柔光底，对应 services.js 的 `accent`。
+     steel 取 ServiceDetail.vue 的值（该页主色即 #6ea0e6），确保矩阵图标与详情页同色。
+     ⚠️ 已知重复（尚未统一）：SolutionDetail 的 steel 是 #3f6fb5、Services 的 .entry--steel
+     用 --navy-300；sand 在 SolutionDetail 里是 #c98a12。三处 steel 实为三种蓝。 */
+  --sand-soft: rgba(240, 180, 90, 0.14);
+  --steel: #6ea0e6;
+  --steel-soft: rgba(110, 160, 230, 0.14);
 
   /* —— 底面分层（由深到浅，用于建立纵深） —— */
   --bg: #080e1b;
@@ -478,10 +485,6 @@ button {
   background: var(--bg-tint);
   color: var(--ink);
   transition: background 0.24s var(--ease), color 0.24s var(--ease);
-}
-.icon-box--coral {
-  background: var(--coral-soft);
-  color: var(--coral);
 }
 .icon-box--dark {
   background: rgba(255, 255, 255, 0.08);
