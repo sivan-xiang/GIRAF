@@ -1,12 +1,16 @@
 import { createI18n } from 'vue-i18n'
 import { DEFAULT_LANG, SUPPORTED, LANG_STORAGE_KEY } from './locales'
 import en from './en'
-import de from './de'
-import es from './es'
-import th from './th'
 
 export { DEFAULT_LANG, SUPPORTED, LANG_STORAGE_KEY }
-export const messages = { en, de, es, th }
+
+/**
+ * 当前仅启用英语（见 locales.js 的说明）。
+ * 扩展语言时在此追加 import 与 messages 项即可，其余环节自动生效：
+ *   import de from './de'   // 先把 pending/de.js 移回 src/i18n/
+ *   export const messages = { en, de }
+ */
+export const messages = { en }
 
 /**
  * 语言唯一来源：URL（route.meta.lang）。

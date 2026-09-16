@@ -1,18 +1,26 @@
 /**
  * 语言注册表（单一来源，Single Source of Truth）
  * ------------------------------------------------------------------
- * GIRAF 海外站以【英语为默认语言】，其余语言挂在各自前缀下。
- * 扩展一门新语言只需两步：
- *   1) 在此数组追加一项（含 code/label/short/htmlLang/prefix/ogLocale）
- *   2) 在 src/i18n/ 下新增对应文案文件（如 es.js）并在 index.js 中 import
- * 路由生成、语言切换器、<html lang>、hreflang、og:locale 会自动适配，
- * 无需改动任何业务代码。
+ * GIRAF 海外站以【英语为默认语言】。
+ *
+ * ⚠️ 2026-09-16 起：按需求暂时【仅启用英语】。德语 / 西班牙语 / 泰语的
+ *    语言定义与全部译文均未删除，只是不再注册：
+ *      · 语言定义 → 见下方 PENDING_LOCALES
+ *      · 全部译文 → 见 src/i18n/pending/{de,es,th}.js
+ *    启用一门语言只需两步：
+ *      1) 把对应项从 PENDING_LOCALES 剪回 locales 数组
+ *      2) 把 src/i18n/pending/<code>.js 移回 src/i18n/ 并在 index.js 中 import
+ *    路由、<html lang>、hreflang、og:locale 会自动适配，业务代码零改动。
  *
  * prefix 约定：英语（主语言）为空串，URL 落在根路径；其余语言一律使用
  * 两位小写语言代码作为前缀（/de、/es、/th），便于 hreflang 与 SEO 识别。
  */
 export const locales = [
-  { code: 'en', label: 'English', short: 'EN', htmlLang: 'en', prefix: '', ogLocale: 'en_US' },
+  { code: 'en', label: 'English', short: 'EN', htmlLang: 'en', prefix: '', ogLocale: 'en_US' }
+]
+
+/** 已停用但完整保留的语言定义（启用时剪回 locales 数组即可） */
+export const PENDING_LOCALES = [
   { code: 'de', label: 'Deutsch', short: 'DE', htmlLang: 'de', prefix: '/de', ogLocale: 'de_DE' },
   { code: 'es', label: 'Español', short: 'ES', htmlLang: 'es', prefix: '/es', ogLocale: 'es_ES' },
   { code: 'th', label: 'ไทย', short: 'TH', htmlLang: 'th', prefix: '/th', ogLocale: 'th_TH' }

@@ -15,6 +15,16 @@ import AppIcon from './AppIcon.vue'
  */
 const { t, tm, link } = useSite()
 
+/**
+ * 呈现形态：
+ *   page  —— 联系页内嵌的卡片，自带边框、底色与投影
+ *   modal —— 询价弹框内复用。外层 QuoteModal 的面板本身已是卡片，
+ *            这里必须去掉重复的边框与投影，否则会看到「卡片套卡片」的双层框。
+ */
+const props = defineProps({
+  variant: { type: String, default: 'page' } // page | modal
+})
+
 const form = reactive({
   firstName: '',
   lastName: '',
@@ -118,7 +128,7 @@ const copyDetails = async () => {
 </script>
 
 <template>
-  <div class="cform">
+  <div class="cform" :class="`cform--${props.variant}`">
     <h3 class="cform__title">{{ t('contact.form.title') }}</h3>
     <p class="cform__text">{{ t('contact.form.text') }}</p>
 
@@ -268,8 +278,16 @@ const copyDetails = async () => {
   padding: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface-solid);
   box-shadow: var(--sh-2);
+}
+/* 弹框形态：外壳交给 QuoteModal 的面板，这里只保留内容 */
+.cform--modal {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .cform__title {
   margin-bottom: 0.4rem;

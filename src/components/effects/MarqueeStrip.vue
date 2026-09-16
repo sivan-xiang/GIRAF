@@ -84,7 +84,7 @@ const loop = computed(() => [...props.items, ...props.items])
 
 /* 亮底场景（浅色区块） */
 .marquee--light .marquee__item {
-  color: var(--navy-700);
+  color: var(--ink);
   font-weight: 500;
 }
 .marquee--light .marquee__dot {

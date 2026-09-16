@@ -63,13 +63,23 @@ export const company = {
   taxNumber: '43/724/02194',
 
   // —— 集团背景（仅用于「网络 / 关于」页，标注为集团网络，不作联络方式展示）——
+  // 数值取自集团官网口径：1997 年成立、36 个全球分支、2024 年 450,000 TEU、
+  // 累计客户 110,236 家、AAAAA 物流企业资质。
   group: {
     name: 'LONGSAIL International Logistics Co., Ltd.',
     nameZh: '长帆国际物流股份有限公司',
     headquarters: 'Shenzhen, China',
-    since: 1999,
-    offices: '30+'
-  }
+    since: 1997,
+    offices: '36'
+  },
+
+  // —— 关键经营数据（首页数据条 / 公司页事实表共用，避免两处口径不一致）——
+  figures: [
+    { value: '450,000', unit: 'TEU', key: 'teu' },
+    { value: '110,236', unit: '', key: 'customers' },
+    { value: '36', unit: '', key: 'branches' },
+    { value: '1997', unit: '', key: 'founded' }
+  ]
 }
 
 /** 城市名（随语言变化，缺失回退英语） */

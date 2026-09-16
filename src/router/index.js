@@ -1,11 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { pageNames, pathFor } from './pages'
+import { pageNames, pathFor, pathForService, pathForSolution } from './pages'
 import { locales, DEFAULT_LANG, htmlLangOf } from '@/i18n/locales'
 import { readStoredLang, writeStoredLang } from '@/i18n'
+import { services } from '@/data/services'
+import { solutions } from '@/data/solutions'
 
 import Home from '@/pages/Home.vue'
 import Services from '@/pages/Services.vue'
+import ServiceDetail from '@/pages/ServiceDetail.vue'
 import Solutions from '@/pages/Solutions.vue'
+import SolutionDetail from '@/pages/SolutionDetail.vue'
 import About from '@/pages/About.vue'
 import Network from '@/pages/Network.vue'
 import Contact from '@/pages/Contact.vue'
@@ -33,6 +37,34 @@ for (const page of pageNames) {
       name: `${page}-${loc.code}`,
       component: components[page],
       meta: { lang: loc.code, page }
+    })
+  }
+}
+
+/**
+ * 详情页路由：菜单里每一个服务 / 方案都指向自己的页面。
+ * path 使用无斜杠结尾的形式，由 static-routes.mjs 在静态托管时实体化为目录。
+ */
+for (const s of services) {
+  for (const loc of locales) {
+    routes.push({
+      path: pathForService(s.slug, loc.code),
+      name: `service-${s.slug}-${loc.code}`,
+      component: ServiceDetail,
+      props: { slug: s.slug },
+      meta: { lang: loc.code, page: 'service', slug: s.slug }
+    })
+  }
+}
+
+for (const s of solutions) {
+  for (const loc of locales) {
+    routes.push({
+      path: pathForSolution(s.slug, loc.code),
+      name: `solution-${s.slug}-${loc.code}`,
+      component: SolutionDetail,
+      props: { slug: s.slug },
+      meta: { lang: loc.code, page: 'solution', slug: s.slug }
     })
   }
 }

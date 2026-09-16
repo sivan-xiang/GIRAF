@@ -63,7 +63,7 @@ const onLeave = () => {
   position: relative;
   isolation: isolate;
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface-solid);
   border: 1px solid var(--line);
   transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease),
     border-color 0.28s var(--ease);

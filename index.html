@@ -2,9 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!--
+      首屏底色：必须在任何样式表与脚本之前内联。
+      深色站若等到 CSS 到达才上色，会先闪一帧白底；页眉是半透明毛玻璃，
+      还会把那层白采样成一条导航栏高度的白带。此处的内联样式与 base.css 中的
+      html{background:var(--bg)} 构成双保险，#080e1b 即设计令牌里的 --bg。
+    -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #080e1b;
+        color-scheme: dark;
+      }
+    </style>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#253b64" />
+    <meta name="theme-color" content="#080e1b" />
     <!--
       静态回退文案 = 主语言（英语）首页。
       运行时由 App.vue 依据当前路由与语言覆写 title / description / og:* / canonical。
@@ -13,7 +27,7 @@
     <title>GIRAF | Simplify the cross-border trade</title>
     <meta
       name="description"
-      content="GIRAF is the overseas brand of LONGSAIL International Logistics — ocean, air and rail freight, customs clearance and warehousing from our Hamburg hub, backed by 30+ offices across China, Europe and beyond."
+      content="GIRAF is the overseas brand of LONGSAIL International Logistics — ocean, air and rail freight, customs clearance and warehousing, delivered by our own companies in seven countries and backed by 30+ locations worldwide."
     />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
@@ -21,7 +35,7 @@
     <meta property="og:title" content="GIRAF | Simplify the cross-border trade" />
     <meta
       property="og:description"
-      content="Ocean, air and rail freight, customs clearance and warehousing — served from our European hub in Hamburg."
+      content="Ocean, air and rail freight, customs clearance and warehousing — delivered by our own companies in seven countries."
     />
     <!--
       分享图必须是绝对地址：Facebook / LinkedIn 等抓取器不执行 JS，也不解析相对路径。
@@ -36,7 +50,7 @@
     <meta name="twitter:title" content="GIRAF | Simplify the cross-border trade" />
     <meta
       name="twitter:description"
-      content="Ocean, air and rail freight, customs clearance and warehousing — served from our European hub in Hamburg."
+      content="Ocean, air and rail freight, customs clearance and warehousing — delivered by our own companies in seven countries."
     />
     <meta name="twitter:image" content="https://www.girafsail-logistics.com/og-image.png" />
     <!--

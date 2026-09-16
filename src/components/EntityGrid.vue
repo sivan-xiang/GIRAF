@@ -1,8 +1,11 @@
 <script setup>
 /**
- * 全球法定主体网格（分公司 / 子公司）
+ * GIRAF 全球法定主体网格（子公司 / 分公司）
  * 数据源：src/data/entities.js
- * 使用场景：网络页（完整展示）、联系页（区域联系入口）
+ * 使用场景：网络页
+ *
+ * 设计约束：本站是品牌站，**所有主体平级并列**——不设「总部」标签，
+ * 也不把任何一家分公司（含汉堡）凸显为站点主体。因此这里只显示区域标签。
  *
  * 说明：法定名称与注册地址为工商登记原文，**不随语言改写**；
  * 只有城市、国家、区域标签走多语言映射。
@@ -11,22 +14,14 @@ import { useSite } from '@/composables/useSite'
 import { entities, entityCity, entityCountry } from '@/data/entities'
 import AppIcon from './AppIcon.vue'
 
-const { t, lang, link } = useSite()
+const { t, lang } = useSite()
 </script>
 
 <template>
   <div class="entitygrid">
-    <article
-      v-for="(e, i) in entities"
-      :key="e.key"
-      class="entity"
-      :class="{ 'entity--hq': e.hq }"
-      v-reveal="i * 55"
-    >
+    <article v-for="(e, i) in entities" :key="e.key" class="entity" v-reveal="i * 55">
       <div class="entity__head">
-        <span class="chip" :class="e.hq ? 'chip--coral' : ''">
-          {{ e.hq ? t('common.hq') : t(`offices.region.${e.region}`) }}
-        </span>
+        <span class="chip">{{ t(`offices.region.${e.region}`) }}</span>
       </div>
 
       <h3 class="entity__name">{{ e.legalName }}</h3>
@@ -48,10 +43,10 @@ const { t, lang, link } = useSite()
           <AppIcon name="mail" :size="15" />
           <span>{{ e.email }}</span>
         </a>
-        <RouterLink v-if="!e.phoneHref && !e.email" class="entity__link" :to="link('contact')">
-          <AppIcon name="arrow" :size="15" />
-          <span>{{ t('offices.viaHq') }}</span>
-        </RouterLink>
+        <!-- 源站未公布电话的主体：如实说明，不指回任何一地的「总部」 -->
+        <span v-if="!e.phoneHref && !e.email" class="entity__none">
+          {{ t('offices.phoneOnRequest') }}
+        </span>
       </div>
     </article>
   </div>

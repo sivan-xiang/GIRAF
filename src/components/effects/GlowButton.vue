@@ -101,8 +101,8 @@ const bindings = computed(() => {
 }
 
 .gbtn--ghost .gbtn__body {
-  background: #fff;
-  color: var(--navy);
+  background: var(--surface-solid);
+  color: var(--ink);
 }
 .gbtn--ghost .gbtn__ring {
   opacity: 0.55;
@@ -119,9 +119,9 @@ const bindings = computed(() => {
   opacity: 0;
 }
 .gbtn--onDark:hover .gbtn__body {
-  background: #fff;
-  border-color: #fff;
-  color: var(--navy);
+  background: var(--surface-solid);
+  border-color: var(--line-strong);
+  color: var(--ink);
 }
 
 /* —— 尺寸 —— */

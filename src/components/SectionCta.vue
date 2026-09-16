@@ -1,5 +1,6 @@
 <script setup>
 import { useSite } from '@/composables/useSite'
+import { openQuote } from '@/composables/useQuote'
 import { company } from '@/data/company'
 import GlowButton from './effects/GlowButton.vue'
 import Magnet from './effects/Magnet.vue'
@@ -14,7 +15,7 @@ const props = defineProps({
   primaryLabel: { type: String, default: '' }
 })
 
-const { t, link } = useSite()
+const { t } = useSite()
 </script>
 
 <template>
@@ -26,7 +27,7 @@ const { t, link } = useSite()
       </div>
       <div class="ctaband__actions">
         <Magnet :padding="60" :magnet-strength="6">
-          <GlowButton :to="link('contact')" variant="primary" size="lg">
+          <GlowButton variant="primary" size="lg" @click="openQuote">
             {{ props.primaryLabel || t('home.cta.primary') }}
             <AppIcon name="arrow" :size="17" />
           </GlowButton>

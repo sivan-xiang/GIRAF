@@ -1,19 +1,11 @@
 <script setup>
 import { computed } from 'vue'
 import { useSite } from '@/composables/useSite'
-import { pick } from '@/i18n/locales'
-import {
-  germanOffices,
-  chinaOffices,
-  worldOffices,
-  cityLabel,
-  countryLabel
-} from '@/data/network'
-import { entities, entityCity } from '@/data/entities'
-import AuroraBackground from '@/components/effects/AuroraBackground.vue'
-import RevealText from '@/components/effects/RevealText.vue'
-import MarqueeStrip from '@/components/effects/MarqueeStrip.vue'
+import { branches, branchRegions, telHref } from '@/data/branches'
+import { legalEntityCount } from '@/data/entities'
 import EntityGrid from '@/components/EntityGrid.vue'
+import RevealText from '@/components/effects/RevealText.vue'
+import CountUp from '@/components/effects/CountUp.vue'
 import SectionCta from '@/components/SectionCta.vue'
 import AppIcon from '@/components/AppIcon.vue'
 
@@ -24,112 +16,167 @@ const coverage = computed(() => {
   return Array.isArray(list) ? list : []
 })
 
-/**
- * 跑马灯：自有网点（德国 · 中国 · 各海外主体）+ 合作网点
- * 汉堡总部已由 germanOffices 的 primary 项承载，此处跳过主体中的同名项，避免重复。
- * 中国网点与主体城市可能重合，故用 Set 去重。
- */
-const allCities = computed(() => {
-  const own = [
-    ...germanOffices.map((o) =>
-      o.primary ? `${cityLabel(o, lang.value)} · HQ` : cityLabel(o, lang.value)
-    ),
-    ...chinaOffices.map((o) => cityLabel(o, lang.value)),
-    ...entities.filter((e) => !e.hq).map((e) => entityCity(e, lang.value))
-  ]
-  const partners = worldOffices.map((o) => cityLabel(o, lang.value))
-  return [...new Set([...own, ...partners])]
-})
+/** 每个区域下的网点 */
+const groups = computed(() =>
+  branchRegions
+    .map((r) => ({ ...r, items: branches.filter((b) => b.region === r.id) }))
+    .filter((g) => g.items.length)
+)
 
-/** 国家/地区与网点职责文案均为多语言映射，缺失语言自动回退英语 */
-const country = (o) => countryLabel(o, lang.value)
-const city = (o) => cityLabel(o, lang.value)
-const role = (o) => pick(o.role, lang.value)
-const note = (o) => pick(o.note, lang.value)
+/**
+ * 统计口径：运营网点数、法定主体数、区域数。
+ * 「法定主体」按登记名称去重（越南两家 office 同属一个法人），故为 7 而非 8。
+ * 刻意不统计「总部」——集团总部在中国深圳，本站是品牌站，
+ * 不把任何一家分公司（含汉堡）抬为站点主体。
+ */
+const totals = computed(() => ({
+  branches: branches.length,
+  entities: legalEntityCount,
+  regions: branchRegions.length
+}))
+
+/** 网格上的城市标签：网点城市为登记原文，直接使用 */
+const cityOf = (b) => b.city
+
+/** 区域配色：取自品牌色，深色底上均可辨识 */
+const SEG_COLORS = ['#fa5959', '#8aa6d8', '#f0b45a', '#4a6ba8', '#ff9a9a']
 </script>
 
 <template>
-  <div>
-    <section class="page-hero">
-      <AuroraBackground
-        :color-stops="['#0d1526', '#3f6fb5', '#fa5959']"
-        :speed="0.7"
-        :amplitude="0.6"
-      />
-      <div class="wrap">
-        <nav class="crumbs" aria-label="Breadcrumb">
+  <div class="atlas">
+    <!--
+      海图式刊头：经纬网格 + 航线斜线。
+      与其他内页的极光 / 平面报头都不同——网络页的内容本身是地理分布，
+      因此让背景直接承担「地图」的语义，而不是再加一层装饰。
+    -->
+    <section class="chart">
+      <div class="chart__grid" aria-hidden="true"></div>
+      <div class="chart__routes" aria-hidden="true"></div>
+      <div class="chart__glow" aria-hidden="true"></div>
+
+      <div class="wrap chart__inner">
+        <nav class="crumbs rise" aria-label="Breadcrumb">
           <RouterLink :to="link('home')">{{ t('nav.home') }}</RouterLink>
           <span aria-hidden="true">/</span>
           <span>{{ t('network.hero.crumb') }}</span>
         </nav>
-        <span class="eyebrow">{{ t('network.hero.eyebrow') }}</span>
-        <h1><RevealText :text="t('network.hero.title')" :step="42" /></h1>
-        <p>{{ t('network.hero.text') }}</p>
+        <span class="eyebrow rise" :style="{ '--d': '60ms' }">{{ t('network.hero.eyebrow') }}</span>
+        <h1 class="chart__title"><RevealText :text="t('network.hero.title')" :step="42" /></h1>
+        <p class="chart__text rise" :style="{ '--d': '220ms' }">{{ t('network.hero.text') }}</p>
+
+        <dl class="legend rise" :style="{ '--d': '320ms' }">
+          <div class="legend__i">
+            <dt>{{ t('network.legend.branches') }}</dt>
+            <dd><CountUp :to="totals.branches" :duration="1000" /></dd>
+          </div>
+          <div class="legend__i">
+            <dt>{{ t('network.legend.entities') }}</dt>
+            <dd><CountUp :to="totals.entities" :duration="1000" :delay="90" /></dd>
+          </div>
+          <div class="legend__i">
+            <dt>{{ t('network.legend.markets') }}</dt>
+            <dd><CountUp :to="totals.regions" :duration="1000" :delay="180" /></dd>
+          </div>
+        </dl>
       </div>
     </section>
 
-    <!-- 覆盖带 -->
-    <section class="section section--dark section--tight">
-      <div class="wrap">
-        <span class="eyebrow">{{ t('network.coverage.eyebrow') }}</span>
-      </div>
-      <MarqueeStrip :items="allCities" :speed="70" :muted="true" />
-    </section>
-
-    <!-- 德国 -->
-    <section class="section">
+    <!-- 区域分栏 -->
+    <section class="section section--dark">
       <div class="wrap">
         <div class="section-head" v-reveal>
-          <span class="eyebrow">{{ t('network.germany.eyebrow') }}</span>
-          <h2>{{ t('network.germany.title') }}</h2>
+          <span class="eyebrow">{{ t('network.regions.eyebrow') }}</span>
+          <h2>{{ t('network.regions.title') }}</h2>
+          <p class="lead">{{ t('network.regions.text') }}</p>
         </div>
 
-        <div class="grid grid--2">
-          <article
-            v-for="(o, i) in germanOffices"
-            :key="o.key"
-            class="office"
-            :class="{ 'office--primary': o.primary }"
-            v-reveal="i * 70"
-          >
-            <div class="office__top">
-              <div class="icon-box" :class="o.primary ? 'icon-box--coral' : ''">
-                <AppIcon name="pin" />
-              </div>
-              <span v-if="o.primary" class="chip chip--coral">{{ t('common.hq') }}</span>
-            </div>
-            <h3 class="office__city">{{ city(o) }}</h3>
-            <p class="office__country">{{ country(o) }}</p>
-            <p class="office__role">{{ role(o) }}</p>
-            <p class="office__note">{{ note(o) }}</p>
-          </article>
+        <!--
+          区域概览用「分布条 + 名册」，不用等宽卡片列：
+          中国有 22 个网点，其余区域各 1–3 个，等宽网格会让中国那一列拖出满屏空白。
+          分布条按网点数分配宽度，把这种真实的不均衡直接呈现出来，而不是用留白掩盖。
+        -->
+        <div class="spread" v-reveal>
+          <div class="spread__bar" aria-hidden="true">
+            <span
+              v-for="(g, i) in groups"
+              :key="g.id"
+              class="spread__seg"
+              :style="{ flexGrow: g.items.length, background: SEG_COLORS[i % SEG_COLORS.length] }"
+            ></span>
+          </div>
+
+          <ul class="spread__list">
+            <li v-for="(g, i) in groups" :key="g.id" class="spread__row">
+              <span class="spread__name">
+                <i
+                  class="spread__dot"
+                  :style="{ background: SEG_COLORS[i % SEG_COLORS.length] }"
+                ></i>
+                {{ t(`network.region.${g.id}`) }}
+              </span>
+              <span class="spread__cities">
+                <span
+                  v-for="b in g.items"
+                  :key="b.city"
+                  class="spread__city"
+                  :class="{ 'is-own': b.entity }"
+                  :title="b.entity || undefined"
+                >
+                  {{ cityOf(b) }}
+                </span>
+              </span>
+              <span class="spread__n">{{ String(g.items.length).padStart(2, '0') }}</span>
+            </li>
+          </ul>
+
+          <p class="spread__legend">
+            <span class="spread__city is-own">{{ t('network.own') }}</span>
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- 中国 -->
+    <!-- 网点名录：地址与电话，表格式 -->
+    <section class="section section--tight">
+      <div class="wrap">
+        <div class="section-head" v-reveal>
+          <span class="eyebrow">{{ t('network.directory.eyebrow') }}</span>
+          <h2>{{ t('network.directory.title') }}</h2>
+          <p class="lead">{{ t('network.directory.text') }}</p>
+        </div>
+
+        <div class="directory" v-reveal>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">{{ t('network.directory.colCity') }}</th>
+                <th scope="col">{{ t('network.directory.colAddress') }}</th>
+                <th scope="col">{{ t('network.directory.colPhone') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="b in branches" :key="b.city">
+                <th scope="row">
+                  <span class="directory__city">{{ b.city }}</span>
+                  <span v-if="b.entity" class="directory__entity">{{ b.entity }}</span>
+                </th>
+                <td>{{ b.address }}</td>
+                <td>
+                  <a v-if="b.phone" class="directory__tel" :href="telHref(b.phone)">
+                    <AppIcon name="phone" :size="13" />
+                    {{ b.phone }}
+                  </a>
+                  <span v-else class="directory__none">{{ t('network.directory.onRequest') }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 全球法定主体 -->
     <section class="section section--soft">
-      <div class="wrap">
-        <div class="section-head" v-reveal>
-          <span class="eyebrow">{{ t('network.china.eyebrow') }}</span>
-          <h2>{{ t('network.china.title') }}</h2>
-          <p class="lead">{{ t('network.china.text') }}</p>
-        </div>
-        <div class="citygrid" v-reveal>
-          <span
-            v-for="o in chinaOffices"
-            :key="o.city.en"
-            class="citygrid__cell"
-            :class="{ 'citygrid__cell--hq': o.hq }"
-          >
-            {{ city(o) }}
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 全球法定主体：分公司 / 子公司（名称与地址为登记原文，不翻译） -->
-    <section class="section">
       <div class="wrap">
         <div class="section-head" v-reveal>
           <span class="eyebrow">{{ t('offices.eyebrow') }}</span>
@@ -140,30 +187,19 @@ const note = (o) => pick(o.note, lang.value)
       </div>
     </section>
 
-    <!-- 世界 -->
-    <section class="section section--soft">
+    <!-- 主体归属说明 + 覆盖内容 -->
+    <section class="section section--tight">
       <div class="wrap">
-        <div class="section-head" v-reveal>
-          <span class="eyebrow">{{ t('network.world.eyebrow') }}</span>
-          <h2>{{ t('network.world.title') }}</h2>
-        </div>
-        <div class="citygrid" v-reveal>
-          <span v-for="o in worldOffices" :key="o.city.en" class="citygrid__cell">
-            {{ city(o) }}<br /><small>{{ country(o) }}</small>
-          </span>
-        </div>
-
-        <!-- 主体归属说明：避免客户把集团网点当成合同方 -->
         <div class="callout netnote" v-reveal>
           <span class="callout__t">{{ t('network.note.title') }}</span>
           {{ t('network.note.text') }}
         </div>
 
-        <div class="grid grid--3 netcoverage">
-          <div v-for="(c, i) in coverage" :key="i" class="card" v-reveal="i * 70">
-            <span class="numitem__n">{{ String(i + 1).padStart(2, '0') }}</span>
-            <h3 class="card__title">{{ c.k }}</h3>
-            <p class="card__text">{{ c.v }}</p>
+        <div class="coverlist">
+          <div v-for="(c, i) in coverage" :key="i" class="coverlist__i" v-reveal="i * 70">
+            <span class="coverlist__n">{{ String(i + 1).padStart(2, '0') }}</span>
+            <h3 class="coverlist__k">{{ c.k }}</h3>
+            <p class="coverlist__v">{{ c.v }}</p>
           </div>
         </div>
       </div>
@@ -174,66 +210,301 @@ const note = (o) => pick(o.note, lang.value)
 </template>
 
 <style scoped>
-.office {
-  padding: clamp(1.6rem, 1.3rem + 1.2vw, 2.1rem);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: #fff;
-  box-shadow: var(--sh-1);
-  transition: transform 0.24s var(--ease), box-shadow 0.24s var(--ease);
+/* ---------- 海图刊头 ---------- */
+.chart {
+  position: relative;
+  padding: clamp(2.6rem, 1.8rem + 3.6vw, 4.6rem) 0 clamp(2.2rem, 1.6rem + 2.8vw, 3.4rem);
+  background: linear-gradient(165deg, var(--navy-950) 0%, #0a1830 60%, #10233f 100%);
+  color: #fff;
+  overflow: hidden;
 }
-.office:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--sh-3);
+/* 经纬网格：两级网格叠加，形成航海图的疏密感 */
+.chart__grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 132px 132px, 132px 132px, 22px 22px, 22px 22px;
+  mask-image: radial-gradient(ellipse 120% 100% at 20% 0%, #000 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 120% 100% at 20% 0%, #000 20%, transparent 78%);
+  pointer-events: none;
 }
-.office--primary {
-  border-color: #f7c9c9;
-  background: linear-gradient(150deg, #fffafa, #fff);
+/* 航线：两条虚线斜线，暗示东西向走廊 */
+.chart__routes {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+      108deg,
+      rgba(250, 89, 89, 0.3) 0 7px,
+      transparent 7px 18px
+    ),
+    repeating-linear-gradient(64deg, rgba(110, 160, 230, 0.22) 0 7px, transparent 7px 20px);
+  background-size: 100% 100%, 100% 100%;
+  mask-image: linear-gradient(180deg, transparent 12%, #000 55%, transparent 96%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 12%, #000 55%, transparent 96%);
+  opacity: 0.5;
+  pointer-events: none;
 }
-.office__top {
+.chart__glow {
+  position: absolute;
+  top: -50%;
+  right: -14%;
+  width: 44rem;
+  height: 44rem;
+  background: radial-gradient(circle, rgba(63, 111, 181, 0.3), transparent 62%);
+  pointer-events: none;
+}
+.chart__inner {
+  position: relative;
+  z-index: 1;
+}
+.chart__title {
+  max-width: 24ch;
+  margin-bottom: 0.8rem;
+  color: #fff;
+  font-size: var(--fs-h1);
+}
+.chart__text {
+  max-width: 58ch;
+  color: var(--on-dark);
+  font-size: var(--fs-lead);
+}
+
+.legend {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: clamp(1.4rem, 0.8rem + 2.2vw, 3rem);
+  margin: clamp(1.8rem, 1.4rem + 1.6vw, 2.6rem) 0 0;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--hair-dark);
 }
-.office__city {
+.legend__i dt {
   margin-bottom: 0.15rem;
-  font-size: 1.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-dark-muted);
 }
-.office__country {
-  margin-bottom: 0.9rem;
+.legend__i dd {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 区域分布（分布条 + 名册） ---------- */
+.spread__bar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  margin-bottom: 1.6rem;
+}
+.spread__seg {
+  flex: 1 1 0;
+  min-width: 5px;
+  border-radius: 2px;
+  opacity: 0.88;
+}
+
+.spread__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.spread__row {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) 46px;
+  gap: 0.7rem 1.5rem;
+  align-items: baseline;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--hair-dark);
+}
+.spread__row:last-child {
+  border-bottom: 0;
+}
+.spread__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--ink);
+  white-space: nowrap;
 }
-.office__role {
-  margin-bottom: 0.35rem;
-  font-size: 0.95rem;
+.spread__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.spread__cities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--body);
+}
+/* 自有网点：前置圆点 + 提亮字重，取代原先的「总部」实心徽标 */
+.spread__city.is-own {
+  color: var(--ink);
   font-weight: 600;
-  color: var(--navy-700);
 }
-.office__note {
+.spread__city.is-own::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: var(--coral);
+  vertical-align: middle;
+}
+.spread__n {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--on-dark-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.spread__legend {
+  display: flex;
+  align-items: center;
+  margin: 1.3rem 0 0;
+  font-size: 0.8rem;
+  color: var(--on-dark-muted);
+}
+
+/* ---------- 网点名录 ---------- */
+.directory {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.directory table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.directory th,
+.directory td {
+  padding: 0.85rem 1.2rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.directory thead th {
+  position: sticky;
+  top: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+}
+.directory tbody th {
+  width: 200px;
+}
+.directory__city {
+  display: block;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.directory__entity {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--coral);
+}
+.directory tbody td {
+  color: var(--body);
+}
+.directory__tel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.directory__none {
+  font-size: 0.84rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.directory tbody tr:last-child th,
+.directory tbody tr:last-child td {
+  border-bottom: 0;
+}
+.directory tbody tr:hover {
+  background: var(--bg-soft);
+}
+
+/* ---------- 说明与覆盖清单 ---------- */
+.netnote {
+  margin-bottom: 2.4rem;
+}
+
+.coverlist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.coverlist__i {
+  padding: 1.5rem 1.4rem;
+  background: var(--surface-solid);
+}
+.coverlist__n {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--coral);
+  font-variant-numeric: tabular-nums;
+}
+.coverlist__k {
+  margin-bottom: 0.35rem;
+  font-size: 1.02rem;
+}
+.coverlist__v {
   margin: 0;
   font-size: 0.9rem;
   color: var(--body);
 }
 
-.citygrid__cell small {
-  font-size: 0.78rem;
-  font-weight: 400;
-  color: var(--muted);
-}
-.citygrid__cell:hover small {
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.netnote {
-  margin-top: 2.4rem;
-}
-
-.netcoverage {
-  margin-top: 2.4rem;
+/* 窄屏：区域名与计数并排一行，城市名册折到下一行占满宽度 */
+@media (max-width: 760px) {
+  .spread__row {
+    grid-template-columns: minmax(0, 1fr) 40px;
+  }
+  .spread__name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .spread__n {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .spread__cities {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }
 </style>

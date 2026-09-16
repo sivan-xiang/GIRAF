@@ -10,6 +10,9 @@ _shots/
 # 上游参考素材（Vue Bits 官方组件源码等），仅本地参考
 _ref/
 
+# 参考站存档（国内的 longsailing.net 页面转存），仅作内容蓝本，不入库
+_giraf.html
+
 # 智能体工作记录（项目内部笔记，不进公开仓库）
 .workbuddy/
 

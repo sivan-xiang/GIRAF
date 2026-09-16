@@ -8,9 +8,15 @@
  * 序列宽度不足容器时自动补足副本数，避免宽屏下出现空档。
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import AppIcon from '@/components/AppIcon.vue'
 
 const props = defineProps({
-  /** [{ label, href?, src?, alt? }] —— 有 src 渲染图片，否则渲染文字 */
+  /**
+   * [{ label, href?, src?, alt?, icon? }] —— 有 src 渲染图片，否则渲染文字。
+   * icon 为 AppIcon 的名字，作为文字前的小图标（如信任带城市名前的定位钉）。
+   * 之所以让组件吃「图标名」而不是让调用方塞一段 HTML：图标几何只此一份（AppIcon），
+   * 调用方也不必为了加一个图标就改用插槽。
+   */
   items: { type: Array, required: true },
   /** 位移速度，px/秒 */
   speed: { type: Number, default: 90 },
@@ -48,6 +54,9 @@ let onWinResize = null
 const copies = computed(() => Array.from({ length: copyCount.value }, (_, i) => i))
 
 const directionSign = computed(() => (props.direction === 'left' ? 1 : -1))
+
+/** 文字模式下前置图标的尺寸，跟随 logoHeight 等比缩放 */
+const iconSize = computed(() => Math.round(props.logoHeight * 0.92))
 
 const rootStyle = computed(() => ({
   '--ll-gap': `${props.gap}px`,
@@ -175,11 +184,17 @@ watch(
             :aria-label="it.alt || it.label"
           >
             <img v-if="it.src" :src="it.src" :alt="it.alt || ''" :style="{ height: `${logoHeight}px` }" />
-            <span v-else class="lloop__text" :style="{ fontSize: `${logoHeight}px` }">{{ it.label }}</span>
+            <span v-else class="lloop__text" :style="{ fontSize: `${logoHeight}px` }">
+              <AppIcon v-if="it.icon" class="lloop__icon" :name="it.icon" :size="iconSize" />
+              {{ it.label }}
+            </span>
           </a>
           <template v-else>
             <img v-if="it.src" :src="it.src" :alt="it.alt || ''" :style="{ height: `${logoHeight}px` }" />
-            <span v-else class="lloop__text" :style="{ fontSize: `${logoHeight}px` }">{{ it.label }}</span>
+            <span v-else class="lloop__text" :style="{ fontSize: `${logoHeight}px` }">
+              <AppIcon v-if="it.icon" class="lloop__icon" :name="it.icon" :size="iconSize" />
+              {{ it.label }}
+            </span>
           </template>
         </li>
       </ul>
@@ -223,10 +238,14 @@ watch(
 .lloop__text {
   display: inline-flex;
   align-items: center;
+  gap: 0.42em; /* 有 icon 时图标与文字的间距（em → 随字号缩放）；无 icon 时不产生任何影响 */
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1;
   white-space: nowrap;
+}
+.lloop__icon {
+  flex: 0 0 auto;
 }
 .lloop__item img {
   display: block;

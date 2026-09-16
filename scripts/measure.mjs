@@ -1,8 +1,9 @@
 /**
  * 栅格与尺寸精确测量（避免目测误差）。
  * 校验三点：1) 页头与正文容器左右边缘是否对齐同一栅格
- *           2) 移动端顶栏是否存在元素被裁切
+ *           2) 移动端页眉（导航栏）是否存在元素被裁切
  *           3) 页头 logo / 汉堡按钮的渲染尺寸是否合理
+ * 注意：顶部信息条已整体移除，本脚本会顺带断言其不存在，防止被误加回。
  */
 import http from 'node:http'
 import fs from 'node:fs'
@@ -65,7 +66,7 @@ const box = (sel) => `(() => {
   await ctx.close()
 }
 
-// ---------- 移动端：顶栏裁切与页头尺寸 ----------
+// ---------- 移动端：页眉裁切与页头尺寸 ----------
 for (const vw of [390, 360]) {
   const ctx = await browser.newContext({ viewport: { width: vw, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true })
   const p = await ctx.newPage()
@@ -80,14 +81,16 @@ for (const vw of [390, 360]) {
       const r = el.getBoundingClientRect()
       return { l: Math.round(r.left), r: Math.round(r.right), w: Math.round(r.width), h: Math.round(r.height) }
     }
-    out.topbar = g('.topbar')
-    out.topbarInner = g('.topbar .wrap')
+    // 顶部信息条已整体移除，其存在与否本身就是一项检查
+    out.topbarRemoved = !document.querySelector('.topbar')
+    out.navbar = g('.navbar')
+    out.navbarInner = g('.navbar > .wrap')
     out.brand = g('.brand')
     out.logo = g('.brand__logo, .brand img')
     out.burger = g('.burger, .navtoggle, .menu-btn, .site-header button')
     out.header = g('.site-header, header')
-    // 顶栏内所有直接子元素，找出被裁切的
-    const bar = document.querySelector('.topbar .wrap')
+    // 导航栏内所有后代元素，找出被裁切的（顶栏移除后，裁切检测改挂在此处）
+    const bar = document.querySelector('.navbar > .wrap')
     if (bar) {
       const br = bar.getBoundingClientRect()
       out.clipped = [...bar.querySelectorAll('*')]
@@ -106,16 +109,17 @@ for (const vw of [390, 360]) {
         }))
       out.barWidth = Math.round(br.width)
     }
-    // 顶栏是否换行（高度异常）
-    out.topbarH = bar ? Math.round(bar.getBoundingClientRect().height) : null
+    // 导航栏是否换行（高度异常）
+    out.navbarH = bar ? Math.round(bar.getBoundingClientRect().height) : null
     return out
   })
 
   console.log(`\n=== 移动端 ${vw}px ===`)
   for (const [k, v] of Object.entries(m)) {
-    if (k === 'clipped') continue
+    if (k === 'clipped' || k === 'topbarRemoved') continue
     console.log(' ', k.padEnd(14), v && typeof v === 'object' ? `left=${v.l} right=${v.r} w=${v.w} h=${v.h}` : v)
   }
+  console.log('  顶部信息条:', m.topbarRemoved ? '已移除 ✓' : '仍存在 ✗（预期已整体移除）')
   console.log('  被裁切元素:', m.clipped?.length ? JSON.stringify(m.clipped, null, 2) : '无 ✓')
   await ctx.close()
 }

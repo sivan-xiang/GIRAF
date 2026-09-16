@@ -47,14 +47,26 @@ const server = http.createServer((req, res) => {
   fs.createReadStream(file).pipe(res)
 })
 
-/** [名称, 路径, 期望语言, h1 必含片段（忽略空白与大小写）] */
-const PAGES = [
+/**
+ * [名称, 路径, 期望语言, h1 必含片段（忽略空白与大小写）]
+ *
+ * ⚠️ 2026-09-16：站点按需求只启用英语（见 src/i18n/locales.js 的 PENDING_LOCALES）。
+ * de / es / th 的译文完整保留在 src/i18n/pending/，但**未注册 → 没有路由**，
+ * 对它们的断言只会产生一地假失败（曾一次报出 21 条）。
+ * 所以这里先列全四门语言，再按「当前已注册的语言」过滤——将来剪回一门语言，
+ * 本脚本自动恢复对它的断言，不需要改代码。
+ */
+import { pathToFileURL } from 'node:url'
+
+const ALL_PAGES = [
   ['en-home', '/', 'en', 'cross-border trade'],
   ['en-services', '/services', 'en', 'from one source'],
   ['en-solutions', '/solutions', 'en', 'constant attention'],
   ['en-company', '/company', 'en', 'overseas brand'],
-  ['en-network', '/network', 'en', 'A Hamburg hub'],
-  ['en-contact', '/contact', 'en', 'Hamburg'],
+  // 注意：h1 片段必须与 src/i18n/en.js 的 <page>.hero.title 保持一致，
+  // 文案改了就同步改这里，否则这里会长期假装报错（网络页/联系页曾各留一条）。
+  ['en-network', '/network', 'en', 'Our own companies'],
+  ['en-contact', '/contact', 'en', 'Talk to the GIRAF'],
   ['en-imprint', '/imprint', 'en', 'Imprint'],
   ['en-privacy', '/privacy', 'en', 'Privacy policy'],
   ['de-home', '/de', 'de', 'grenzüberschreitenden'],
@@ -70,6 +82,13 @@ const PAGES = [
   ['th-network', '/th/network', 'th', 'ฮัมบูร์ก'],
   ['th-contact', '/th/contact', 'th', 'ฮัมบูร์ก']
 ]
+
+const { locales } = await import(
+  pathToFileURL(path.resolve(ROOT, '..', 'src/i18n/locales.js')).href
+)
+const ACTIVE = locales.map((l) => l.code)
+const PAGES = ALL_PAGES.filter((e) => ACTIVE.includes(e[2]))
+console.log(`已注册语言：${ACTIVE.join(', ')}（跳过 ${ALL_PAGES.length - PAGES.length} 条未启用语言的页面）\n`)
 
 /** 逐屏滚动以触发滚动揭示动画，再回到顶部截图 */
 async function primeAnimations(page) {
@@ -141,15 +160,16 @@ const mctx = await browser.newContext({
   isMobile: true,
   hasTouch: true
 })
+/* 窄屏同样只测已注册语言（未注册语言没有路由） */
 for (const [name, url] of [
-  ['m-en-home', '/'],
-  ['m-en-services', '/services'],
-  ['m-en-contact', '/contact'],
-  ['m-de-home', '/de'],
-  ['m-es-home', '/es'],
-  ['m-th-home', '/th'],
-  ['m-th-contact', '/th/contact']
-]) {
+  ['m-en-home', '/', 'en'],
+  ['m-en-services', '/services', 'en'],
+  ['m-en-contact', '/contact', 'en'],
+  ['m-de-home', '/de', 'de'],
+  ['m-es-home', '/es', 'es'],
+  ['m-th-home', '/th', 'th'],
+  ['m-th-contact', '/th/contact', 'th']
+].filter((e) => ACTIVE.includes(e[2]))) {
   const page = await mctx.newPage()
   const errs = []
   page.on('pageerror', (e) => errs.push('PAGEERROR: ' + e.message))

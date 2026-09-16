@@ -4,11 +4,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SiteHeader from '@/components/SiteHeader.vue'
 import SiteFooter from '@/components/SiteFooter.vue'
+import QuoteModal from '@/components/QuoteModal.vue'
 import GrainOverlay from '@/components/effects/GrainOverlay.vue'
 import ScrollProgress from '@/components/effects/ScrollProgress.vue'
 import { company } from '@/data/company'
 import { locales, ogLocaleOf, htmlLangOf, DEFAULT_LANG } from '@/i18n/locales'
-import { pathFor } from '@/router/pages'
+import { pathFor, pathForService, pathForSolution } from '@/router/pages'
+import { serviceBySlug } from '@/data/services'
+import { solutionBySlug } from '@/data/solutions'
 
 const route = useRoute()
 const { t, tm, locale } = useI18n({ useScope: 'global' })
@@ -35,7 +38,9 @@ const raw = (key) => {
  * 改为「路由解析完成」这一语义时机：afterEach 覆盖首次与后续所有导航，
  * onMounted 作为兜底以防 afterEach 注册晚于首次导航的解析。
  */
-const metaKey = computed(() => `${route.meta.lang || ''}|${route.meta.page || ''}`)
+const metaKey = computed(
+  () => `${route.meta.lang || ''}|${route.meta.page || ''}|${route.meta.slug || ''}`
+)
 
 const applyMeta = () => {
   const lang = route.meta.lang
@@ -48,8 +53,16 @@ const applyMeta = () => {
   document.documentElement.setAttribute('lang', htmlLangOf(lang))
   document.documentElement.setAttribute('dir', 'ltr')
 
-  const title = raw(`meta.${page}.title`)
-  const desc = raw(`meta.${page}.desc`)
+  // 详情页（服务 / 方案）的标题与描述取自内容数据源，静态页走 i18n
+  const record =
+    page === 'service'
+      ? serviceBySlug(route.meta.slug)
+      : page === 'solution'
+        ? solutionBySlug(route.meta.slug)
+        : null
+
+  const title = record ? `${record.name} | ${company.brand}` : raw(`meta.${page}.title`)
+  const desc = record ? record.tagline : raw(`meta.${page}.desc`)
 
   document.title = title
   setMeta('name', 'description', desc)
@@ -58,7 +71,7 @@ const applyMeta = () => {
   setMeta('property', 'og:locale', ogLocaleOf(lang))
   setAlternateOgLocales(lang)
   setMeta('property', 'og:url', window.location.href)
-  setCanonical(page, lang)
+  setCanonical(page, lang, route.meta.slug)
 }
 
 /** og:locale:alternate —— 同一页面存在的其他语言版本，供社交平台做语言匹配 */
@@ -86,9 +99,15 @@ const setMeta = (attr, key, value) => {
 }
 
 /** 规范链接 + 全语言 hreflang + x-default，便于搜索引擎区分各语言版本 */
-const setCanonical = (page, lang) => {
+const setCanonical = (page, lang, slug = null) => {
   const base = window.location.origin + (import.meta.env.BASE_URL || '/')
-  const abs = (code) => new URL(pathFor(page, code).replace(/^\//, ''), base).href
+  /** 同一页面在各语言下的路径：详情页按 slug 生成，静态页按页面名生成 */
+  const pathOf = (code) => {
+    if (slug && page === 'service') return pathForService(slug, code)
+    if (slug && page === 'solution') return pathForSolution(slug, code)
+    return pathFor(page, code)
+  }
+  const abs = (code) => new URL(pathOf(code).replace(/^\//, ''), base).href
 
   let link = document.head.querySelector('link[rel="canonical"]')
   if (!link) {
@@ -130,9 +149,21 @@ onMounted(applyMeta)
   <GrainOverlay :opacity="0.04" />
   <SiteHeader />
   <main id="main">
-    <RouterView />
+    <RouterView v-slot="{ Component, route: current }">
+      <!--
+        路由切换过渡：走 out-in，不让两页同时留在文档里（会叠加文档高度，
+        滚动位置与 ScrollProgress 都会瞬间跳一下）。
+        key 用「页面 + slug」而不含语言：切语言时同页不重挂载、不闪一下，
+        文案靠 i18n 响应式替换即可。
+      -->
+      <Transition name="page" mode="out-in">
+        <component :is="Component" :key="`${current.meta.page}:${current.meta.slug || ''}`" />
+      </Transition>
+    </RouterView>
   </main>
   <SiteFooter />
+  <!-- 全站唯一的询价弹框：所有「Request a quote」按钮都打开它 -->
+  <QuoteModal />
   <div class="sr-only" aria-hidden="true">{{ company.legalName }}</div>
 </template>
 

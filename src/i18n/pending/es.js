@@ -26,6 +26,10 @@ export default {
   },
 
   common: {
+    submenu: 'Submenú',
+    viewAll: 'Ver todo',
+    prev: 'Anterior',
+    next: 'Siguiente',
     menu: 'Menú',
     close: 'Cerrar',
     language: 'Idioma',
@@ -47,14 +51,13 @@ export default {
     officeHours: 'Horario de atención',
     officeHoursValue: 'Lun–Vie, 08:00–18:00 CET/CEST',
     required: 'Obligatorio',
-    hq: 'Sede europea',
     since: 'desde'
   },
 
   meta: {
     home: {
       title: 'GIRAF | Simplificamos el comercio transfronterizo',
-      desc: 'GIRAF es la marca internacional de LONGSAIL International Logistics: transporte marítimo, aéreo y ferroviario, despacho de aduanas y almacenaje desde nuestra sede de Hamburgo, con más de 30 oficinas en China, Europa y el resto del mundo.'
+      desc: 'GIRAF es la marca internacional de LONGSAIL International Logistics: transporte marítimo, aéreo y ferroviario, despacho de aduanas y almacenaje, prestados por nuestras propias sociedades en siete países y respaldados por más de 30 ubicaciones en todo el mundo.'
     },
     services: {
       title: 'Servicios | Transporte marítimo, aéreo y ferroviario, aduanas, almacenaje',
@@ -70,11 +73,11 @@ export default {
     },
     network: {
       title: 'Red | Oficinas en China, Europa, Norteamérica y todo el mundo',
-      desc: 'Un centro europeo en Hamburgo, más de 20 delegaciones propias en China y oficinas asociadas en Europa, Norteamérica, el Sudeste Asiático y Oriente Medio.'
+      desc: 'Siete sociedades propias en Europa, América, Asia y Oriente Medio, más de 20 delegaciones propias en China y oficinas asociadas en todo el mundo.'
     },
     contact: {
-      title: 'Contacto | GIRAF — Hamburgo',
-      desc: 'Hable con nuestro equipo en Hamburgo: +49 40 60429719-0, info.de@girafsail-logistics.com. Normalmente respondemos en un día laborable.'
+      title: 'Contacto | GIRAF — nuestras sociedades en todo el mundo',
+      desc: 'Contacte con la sociedad de GIRAF en su mercado. Oficinas registradas, direcciones y teléfonos directos en siete países de Europa, América, Asia y Oriente Medio.'
     },
     imprint: {
       title: 'Aviso legal | Girafsail Logistics GmbH',
@@ -92,63 +95,30 @@ export default {
       title: 'Simplificamos el',
       titleLead: 'Simplificamos el',
       titleAccent: 'comercio transfronterizo.',
-      text: 'La marca internacional de LONGSAIL International Logistics. Desde nuestro centro europeo en Hamburgo gestionamos transporte marítimo, aéreo y ferroviario, despacho de aduanas y almacenaje para importadores y exportadores de todo el mundo.',
+      text: 'Una marca internacional de logística especializada en la localización en el exterior: soluciones integrales basadas en operación local y recursos globales. Contamos con equipos propios en México, Reino Unido, Alemania, Vietnam, Tailandia y Arabia Saudí, respaldados por la red del grupo en origen.',
       primary: 'Solicitar presupuesto',
       secondary: 'Ver servicios',
       scroll: 'Ver más',
-      badges: ['Oficinas propias en China', 'Un equipo europeo en Hamburgo', 'Aduanas gestionadas internamente']
+      badges: ['Equipos propios en 7 mercados', 'Empresa logística AAAAA', 'Aduanas gestionadas internamente']
     },
 
     stats: [
-      { value: '1999', label: 'Fundación del grupo', note: 'más de dos décadas en transitario y logística' },
-      { value: '30+', label: 'Oficinas en el mundo', note: 'en China, Europa, Norteamérica y el Sudeste Asiático' },
-      { value: '20+', label: 'Ciudades en China', note: 'delegaciones propias y agentes designados en origen' },
-      { value: '1', label: 'Centro europeo', note: 'Hamburgo, para la contratación y la responsabilidad' }
+      { value: '450.000', label: 'TEU al año', note: 'volumen de transporte del grupo, 2024' },
+      { value: '110.236', label: 'Clientes atendidos', note: 'en siete sectores, incluidas empresas Fortune 500' },
+      { value: '36', label: 'Delegaciones en el mundo', note: 'China, Europa, Norteamérica, Sudeste Asiático y Oriente Medio' },
+      { value: '1997', label: 'Fundación del grupo', note: 'un equipo de cuatro personas en Shenzhen' }
     ],
 
     trust: {
       label: 'Oficinas propias y equipos permanentes en origen',
+      count: 'oficinas en China',
       aria: 'Nuestras delegaciones en China'
     },
 
     services: {
       eyebrow: 'Servicios',
-      title: 'Todas las etapas del trayecto, bajo un solo contrato',
-      text: 'Contrate un único modo de transporte o entréguenos toda la cadena, desde la fábrica hasta la entrega final. En ambos casos tendrá un mismo número de referencia y un mismo equipo.',
-      items: [
-        {
-          title: 'Transporte marítimo',
-          text: 'Contenedor completo (FCL) y grupaje (LCL) con salidas semanales a Asia, América y Oriente Medio, apoyados en la red propia de LONGSAIL en China.'
-        },
-        {
-          title: 'Transporte aéreo',
-          text: 'Vuelos directos y consolidados para envíos urgentes, con recogida, manipulación y entrega posterior gestionadas por una sola mano.'
-        },
-        {
-          title: 'Transporte ferroviario',
-          text: 'Servicios ferroviarios China–Europa: el punto intermedio entre los plazos del marítimo y las tarifas del aéreo, con asistencia completa en frontera.'
-        },
-        {
-          title: 'Transporte terrestre',
-          text: 'Precarrete, transporte de contenedores y tráfico transfronterizo por carretera hacia Benelux, Francia y Europa Central y Oriental.'
-        },
-        {
-          title: 'Despacho de aduanas',
-          text: 'Declaraciones de importación y exportación, clasificación arancelaria, origen preferencial y control de exportaciones, a cargo de nuestro propio equipo de Hamburgo.'
-        },
-        {
-          title: 'Almacenaje',
-          text: 'Manipulación, almacenamiento tampón, depósito aduanero y distribución desde la zona portuaria de Hamburgo.'
-        },
-        {
-          title: 'Mercancías peligrosas',
-          text: 'Envíos ADR, IMDG e IATA-DGR, flat rack, open top, reefer y fuera de gálibo, con la documentación completa.'
-        },
-        {
-          title: 'Logística para comercio electrónico',
-          text: 'Consolidación en origen, preparación de pedidos y entrega hasta la última milla en Europa.'
-        }
-      ]
+      title: 'Diez servicios, cada uno con su propia página',
+      text: 'Abra cualquier entrada para ver qué cubre realmente: el equipo, las rutas y los puntos que deciden si el envío funciona.'
     },
 
     why: {
@@ -157,20 +127,20 @@ export default {
       text: 'El transporte transfronterizo rara vez falla en tránsito. Falla allí donde cambia de manos la responsabilidad. Precisamente ahí ponemos el foco.',
       items: [
         {
-          title: 'Una marca global, un contrato',
-          text: 'GIRAF le conecta con la red propia de LONGSAIL en China. Usted negocia con una sola parte; nosotros coordinamos internamente el lado del origen.'
+          title: 'Operación local, recursos globales',
+          text: 'GIRAFSAIL es la marca del grupo para la localización en el exterior: apoyo al cumplimiento normativo y respuesta ágil en cada mercado, con los recursos del grupo detrás.'
         },
         {
-          title: 'Un centro europeo con responsabilidad local',
-          text: 'Su interlocutor está en Hamburgo y contrata bajo derecho alemán. Eso simplifica notablemente la facturación, la responsabilidad y las reclamaciones.'
+          title: 'Cualificación AAAAA y plataforma propia',
+          text: 'Respaldados por la cualificación AAAAA, una red mundial de más de 30 filiales y la plataforma informática desarrollada por LONGSAIL.'
         },
         {
-          title: 'Conocimiento aduanero propio',
-          text: 'Los códigos arancelarios, el origen preferencial y el control de exportaciones los gestiona nuestro propio personal: sin subcontratar y sin pérdida de información entre partes.'
+          title: 'Equipos propios en los mercados donde vende',
+          text: 'Ciudad de México, Londres, Hamburgo, Ho Chi Minh, Hanói, Bangkok y Riad: no agentes, sino sociedades propias.'
         },
         {
-          title: 'Visibilidad de todo el trayecto',
-          text: 'Avisos de estado en la salida, el transbordo, el levante de aduanas y la entrega. Conocerá los problemas mientras todavía tienen solución.'
+          title: 'Más de 20 años de transitario detrás de cada oferta',
+          text: 'Nuestro equipo logístico aporta más de veinte años de experiencia profesional. Una llamada o un correo bastan para empezar.'
         }
       ]
     },
@@ -179,31 +149,42 @@ export default {
       eyebrow: 'Sectores',
       title: 'Con quién trabajamos',
       items: [
-        'Maquinaria e ingeniería de plantas',
-        'Proveedores de automoción',
-        'Electrónica y bienes de consumo',
-        'Química y plásticos',
-        'Marcas de retail y comercio electrónico',
-        'Carga de proyecto y sobredimensionada'
+        'Nuevas energías',
+        'Equipos de telecomunicaciones',
+        'Componentes de automoción',
+        'Hogar inteligente',
+        'Maquinaria de construcción',
+        'Química',
+        'EPC'
       ]
     },
 
     networkTeaser: {
       eyebrow: 'Red',
-      title: 'Un centro en Hamburgo. Una red en China. Socios en todo el mundo.',
-      text: 'GIRAF es su parte contratante europea. En origen nos apoyamos en la infraestructura propia del grupo LONGSAIL, lo que acorta los tiempos de respuesta y elimina fricciones entre partes.',
+      title: '36 delegaciones. 8 entidades legales. Una marca.',
+      text: 'Cada sociedad GIRAF contrata para su propio mercado, de modo que usted trata con una entidad local que responde localmente, mientras que el origen lo opera la red propia del grupo.',
       cta: 'Ver la red completa'
     },
 
     cta: {
       title: 'Hablemos de su próximo envío',
-      text: 'Envíenos la ruta, el peso, el volumen y la fecha objetivo. Normalmente recibirá un presupuesto y un plazo de tránsito realista en un día laborable.',
+      text: 'Envíenos la ruta, la mercancía, el peso y el plazo. Normalmente recibirá un presupuesto y un plazo de tránsito realista en un día laborable.',
       primary: 'Solicitar presupuesto',
       secondary: 'Ver datos de contacto'
     }
   },
 
   services: {
+    tally: {
+      services: 'Servicios en la cartera',
+      entities: 'Entidades legales',
+      locations: 'Ubicaciones operativas'
+    },
+    directory: {
+      label: 'Directorio de servicios',
+      note: 'Cada entrada abre su propia página.',
+      items: 'partidas'
+    },
     hero: {
       eyebrow: 'Servicios',
       title: 'Transporte, aduanas y almacenaje desde un solo proveedor',
@@ -328,6 +309,8 @@ export default {
   },
 
   solutions: {
+    readMore: 'Leer la ficha completa',
+    bridge: 'Cuatro tipos de carga. Un equipo que los ha movido todos.',
     hero: {
       eyebrow: 'Soluciones',
       title: 'Cadenas de suministro que no exigen atención constante',
@@ -388,6 +371,22 @@ export default {
   },
 
   about: {
+    anchor: {
+      founded: 'Grupo fundado',
+      branches: 'sucursales'
+    },
+    timeline: {
+      eyebrow: 'Hitos',
+      title: 'De un equipo de cuatro personas en 1997',
+      text: 'La cronología que sigue reproduce la historia del grupo tal como se publica: de dónde viene la red y por qué las oficinas con las que trata ya existían antes de que las necesitara.'
+    },
+    credentials: {
+      eyebrow: 'Credenciales',
+      title: 'Cualificación, adhesiones y clasificación',
+      qualifications: 'Cualificación empresarial',
+      rankings: 'Clasificaciones',
+      memberships: 'Adhesiones'
+    },
     hero: {
       eyebrow: 'Empresa',
       title: 'La marca internacional de LONGSAIL',
@@ -448,33 +447,48 @@ export default {
     },
     careers: {
       eyebrow: 'Empleo',
-      title: '¿Le interesa un puesto en el equipo de Hamburgo?',
-      text: 'Somos una oficina pequeña, con líneas de comunicación cortas. Si entiende el transitario como un oficio y no como una función de encaminamiento, encajará aquí.',
+      title: '¿Le interesa formar parte del equipo de GIRAF?',
+      text: 'Somos un equipo compacto, con líneas de comunicación cortas. Si entiende el transitario como un oficio y no como una función de encaminamiento, encajará aquí.',
       cta: 'Envíenos su CV',
-      subject: 'Candidatura — equipo de Hamburgo',
+      subject: 'Candidatura — equipo de GIRAF',
       note: 'Envíe su documentación a nuestra dirección de contacto. Respondemos en un plazo de dos semanas.'
     }
   },
 
   network: {
+    legend: {
+      branches: 'Ubicaciones operativas',
+      entities: 'Entidades legales',
+      markets: 'Regiones'
+    },
+    regions: {
+      eyebrow: 'Cobertura regional',
+      title: 'Dónde operamos',
+      text: 'Treinta ubicaciones en cinco regiones. Las oficinas siguientes son direcciones operativas; la entidad contratante de su mercado figura más abajo.'
+    },
+    region: {
+      cn: 'China',
+      eu: 'Europa',
+      am: 'América',
+      as: 'Asia',
+      me: 'Oriente Medio',
+      intl: 'Internacional'
+    },
+    own: 'Sociedad propia',
+    directory: {
+      eyebrow: 'Directorio',
+      title: 'Direcciones y teléfonos',
+      text: 'Cada ubicación con su dirección postal completa y, cuando se publica, un número marcable.',
+      colCity: 'Ubicación',
+      colAddress: 'Dirección',
+      colPhone: 'Teléfono',
+      onRequest: 'A petición'
+    },
     hero: {
       eyebrow: 'Red',
-      title: 'Un centro en Hamburgo. Una red en China. Socios en todo el mundo.',
-      text: 'Un contrato europeo, respaldado por una red consolidada en origen. Eso le da presencia local sin confusión local.',
+      title: 'Sociedades propias. Equipos propios. Treinta ubicaciones.',
+      text: 'Siete sociedades propias en Europa, América, Asia y Oriente Medio: cada una contrata localmente, respaldada por la red de LONGSAIL en origen, en China.',
       crumb: 'Red'
-    },
-    germany: {
-      eyebrow: 'Europa',
-      title: 'Nuestro centro europeo'
-    },
-    china: {
-      eyebrow: 'Origen',
-      title: 'Presencia propia en China',
-      text: 'Más de 20 ciudades con delegaciones propias o equipos operativos permanentes, dentro del grupo LONGSAIL. Estas oficinas contratan bajo nuestro mandato e informan a Hamburgo.'
-    },
-    world: {
-      eyebrow: 'Internacional',
-      title: 'Oficinas asociadas en todo el mundo'
     },
     note: {
       title: 'Con quién contrata',
@@ -497,40 +511,37 @@ export default {
     title: 'Nuestras propias sociedades en el mundo',
     text: 'GIRAF opera con sociedades propias registradas en siete países. Cada una contrata localmente, bajo el mismo estándar de servicio.',
     registered: 'Domicilio social',
-    viaHq: 'Consultas a través de nuestra sede de Hamburgo',
+    phoneOnRequest: 'Teléfono a petición',
     region: {
       europe: 'Europa',
       americas: 'América',
       asia: 'Asia',
-      africa: 'África'
-    },
-    contact: {
-      eyebrow: 'Contactos regionales',
-      title: 'Encuentre su sociedad GIRAF local',
-      text: 'Contacte directamente con la sociedad responsable de su mercado. Los presupuestos, facturas y contratos los emite la entidad de su región.'
+      middleeast: 'Oriente Medio'
     }
   },
 
   contact: {
     hero: {
       eyebrow: 'Contacto',
-      title: 'Hable con nosotros en Hamburgo',
-      text: 'Para presupuestos, dudas sobre envíos en tránsito y proyectos nuevos, contacte directamente con nuestro equipo de Hamburgo. Normalmente respondemos en un día laborable.',
+      title: 'Hable con la sociedad de GIRAF en su mercado',
+      text: 'GIRAF opera a través de sociedades propias registradas en siete países. Cada una emite presupuestos, contratos y facturas localmente, con el mismo estándar de servicio. Elija su región abajo o envíenos los datos de su envío y dirigiremos su consulta al equipo correspondiente.',
       crumb: 'Contacto'
     },
     details: {
-      title: 'Datos de contacto y de la empresa',
-      company: 'Empresa',
-      address: 'Dirección',
-      phone: 'Teléfono',
-      email: 'Correo electrónico',
-      web: 'Web',
-      hours: 'Horario de atención',
       mgmt: 'Administrador',
-      register: 'Registro mercantil',
-      vat: 'NIF-IVA',
-      tax: 'Número de identificación fiscal'
+      web: 'Web'
     },
+    directory: {
+      eyebrow: 'Directorio mundial',
+      title: 'Todas las sociedades de GIRAF, con dirección y teléfono',
+      text: 'Nuestras propias oficinas registradas en todo el mundo: siete países, un mismo estándar de servicio. La sociedad indicada para su mercado es la que emite sus presupuestos, contratos y facturas.',
+      colAddress: 'Domicilio social',
+      colPhone: 'Teléfono',
+      colEmail: 'Correo electrónico',
+      noPhone: 'Telephone on request',
+      jump: 'Ir a'
+    },
+    routing: 'Envíe aquí su consulta y la dirigiremos a la sociedad de GIRAF responsable de su mercado.',
     form: {
       title: 'Solicitar presupuesto',
       text: 'Describa brevemente su envío. Cuanto más precisos sean los datos, más fiable será el presupuesto.',
@@ -569,7 +580,7 @@ export default {
       },
       successTitle: 'Su consulta está lista para enviarse.',
       success:
-        'Hemos abierto su cliente de correo con los datos rellenados. Pulse enviar y llegará a nuestra mesa de Hamburgo. Si no se ha abierto nada, copie los datos de abajo o escriba a',
+        'Hemos abierto su cliente de correo con los datos rellenados. Pulse enviar y llegará a nuestro equipo. Si no se ha abierto nada, copie los datos de abajo o escriba a',
       copy: 'Copiar datos',
       copied: 'Copiado al portapapeles'
     },
@@ -583,6 +594,21 @@ export default {
       cta: 'Comunicar un daño'
     },
     mapNote: 'Hamburger Straße 11 está en el barrio de Barmbek-Süd, a pocos minutos de la estación de metro Hamburger Straße.'
+  },
+
+  serviceDetail: {
+    spec: 'Especificación',
+    overview: 'Resumen',
+    features: 'Qué incluye',
+    advantages: 'Por qué funciona',
+    allServices: 'Todos los servicios',
+    more: 'Otros servicios de la cartera'
+  },
+
+  solutionDetail: {
+    cargoType: 'Tipo de carga',
+    contactNote: 'Envíenos la mercancía, la ruta y el plazo, y le diremos qué ruta es realista.',
+    others: 'Otros tipos de carga'
   },
 
   imprint: {
@@ -666,15 +692,14 @@ export default {
 
   footer: {
     about:
-      'GIRAF es la marca internacional de LONGSAIL International Logistics: transporte marítimo, aéreo y ferroviario, despacho de aduanas y almacenaje, atendidos desde nuestro centro de Hamburgo y respaldados por más de 30 oficinas en todo el mundo.',
+      'GIRAF es la marca internacional de LONGSAIL International Logistics: transporte marítimo, aéreo y ferroviario, despacho de aduanas y almacenaje, prestados por nuestras propias sociedades en siete países y respaldados por más de 30 ubicaciones en todo el mundo.',
     servicesTitle: 'Servicios',
     companyTitle: 'Empresa',
     contactTitle: 'Contacto',
     newsletterTitle: 'Solicitar presupuesto',
     newsletterText: 'Envíenos la ruta, el peso y el plazo, y le responderemos con una tarifa y un plazo de tránsito.',
     legalNote:
-      'Girafsail Logistics GmbH es su parte contratante europea. Todos los presupuestos, facturas y contratos se emiten en Hamburgo y se rigen por el derecho alemán.',
-    rights: 'Todos los derechos reservados.',
-    vatLine: 'NIF-IVA'
+      'Cada sociedad de GIRAF contrata para su propio mercado. Para la Unión Europea, los presupuestos, facturas y contratos los emite Girafsail Logistics GmbH conforme al derecho alemán.',
+    rights: 'Todos los derechos reservados.'
   }
 }

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { pathFor } from '@/router/pages'
+import { pathForAny, belongsTo } from '@/router/pages'
 import { DEFAULT_LANG } from '@/i18n'
 
 /**
@@ -18,12 +18,20 @@ export function useSite() {
 
   const lang = computed(() => route.meta.lang || DEFAULT_LANG)
   const page = computed(() => route.meta.page || 'home')
+  /** 详情页的 slug（服务 / 方案），静态页为 undefined */
+  const slug = computed(() => route.meta.slug || '')
 
-  /** 取任意页面在当前语言下的地址 */
-  const link = (pageName) => pathFor(pageName, lang.value)
+  /**
+   * 取任意目标的当前语言地址。
+   * 静态页传页面名（'contact'），详情页传 'service:ocean' / 'solution:frozen'。
+   */
+  const link = (target) => pathForAny(target, lang.value)
 
-  /** 取任意页面在指定语言下的地址（语言切换器用） */
-  const linkIn = (pageName, code) => pathFor(pageName, code)
+  /** 取任意目标在指定语言下的地址（语言切换器用） */
+  const linkIn = (target, code) => pathForAny(target, code)
 
-  return { t, tm, route, lang, page, link, linkIn }
+  /** 当前页是否属于某个导航分组（用于一级菜单高亮） */
+  const isGroup = (group) => belongsTo(page.value, group)
+
+  return { t, tm, route, lang, page, slug, link, linkIn, isGroup }
 }

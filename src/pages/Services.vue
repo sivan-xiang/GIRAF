@@ -1,29 +1,16 @@
 <script setup>
 import { computed } from 'vue'
 import { useSite } from '@/composables/useSite'
-import AuroraBackground from '@/components/effects/AuroraBackground.vue'
-import MarqueeStrip from '@/components/effects/MarqueeStrip.vue'
+import { services } from '@/data/services'
+import { entities } from '@/data/entities'
+import { branches } from '@/data/branches'
 import RevealText from '@/components/effects/RevealText.vue'
+import CountUp from '@/components/effects/CountUp.vue'
 import SectionCta from '@/components/SectionCta.vue'
 import AppIcon from '@/components/AppIcon.vue'
 
 const { t, tm, link } = useSite()
 
-const ICONS = {
-  ocean: 'ship',
-  air: 'plane',
-  rail: 'train',
-  inland: 'truck',
-  customs: 'doc',
-  warehouse: 'warehouse',
-  dg: 'danger',
-  ecommerce: 'cart'
-}
-
-const items = computed(() => {
-  const list = tm('services.items')
-  return Array.isArray(list) ? list : []
-})
 const steps = computed(() => {
   const list = tm('services.process.steps')
   return Array.isArray(list) ? list : []
@@ -33,64 +20,86 @@ const pad = (i) => String(i + 1).padStart(2, '0')
 </script>
 
 <template>
-  <div>
-    <!-- 内页头 -->
-    <section class="page-hero">
-      <AuroraBackground
-        :color-stops="['#0d1526', '#fa5959', '#2f6ab0']"
-        :speed="0.8"
-        :amplitude="0.66"
-        :grid="true"
-      />
-      <div class="wrap">
-        <nav class="crumbs" aria-label="Breadcrumb">
+  <div class="services">
+    <!--
+      深色报头 + 一行规模数据。
+      与内页通用的 .page-hero（带 WebGL 极光）不同：这里刻意是静态的、近乎印刷品的版面，
+      因为服务索引承载的是「目录」，需要的是可扫描性而不是氛围。
+    -->
+    <section class="masthead">
+      <div class="masthead__glow" aria-hidden="true"></div>
+      <div class="wrap masthead__inner">
+        <nav class="crumbs rise" aria-label="Breadcrumb">
           <RouterLink :to="link('home')">{{ t('nav.home') }}</RouterLink>
           <span aria-hidden="true">/</span>
           <span>{{ t('services.hero.crumb') }}</span>
         </nav>
-        <span class="eyebrow">{{ t('services.hero.eyebrow') }}</span>
-        <h1><RevealText :text="t('services.hero.title')" :step="48" /></h1>
-        <p>{{ t('services.hero.text') }}</p>
+
+        <span class="eyebrow rise" :style="{ '--d': '60ms' }">{{ t('services.hero.eyebrow') }}</span>
+        <h1 class="masthead__title"><RevealText :text="t('services.hero.title')" :step="48" /></h1>
+        <p class="masthead__text rise" :style="{ '--d': '220ms' }">{{ t('services.hero.text') }}</p>
+
+        <dl class="tally rise" :style="{ '--d': '320ms' }">
+          <div class="tally__i">
+            <dt>{{ t('services.tally.services') }}</dt>
+            <dd><CountUp :to="services.length" :duration="900" /></dd>
+          </div>
+          <div class="tally__i">
+            <dt>{{ t('services.tally.entities') }}</dt>
+            <dd><CountUp :to="entities.length" :duration="900" :delay="90" /></dd>
+          </div>
+          <div class="tally__i">
+            <dt>{{ t('services.tally.locations') }}</dt>
+            <dd><CountUp :to="branches.length" :duration="1100" :delay="180" /></dd>
+          </div>
+        </dl>
       </div>
     </section>
 
-    <!-- 导语 + 服务清单条 -->
+    <!-- 导语 -->
+    <section class="section section--tight">
+      <div class="wrap grid--aside">
+        <div v-reveal>
+          <h2>{{ t('services.intro.title') }}</h2>
+        </div>
+        <p class="lead" v-reveal="90">{{ t('services.intro.text') }}</p>
+      </div>
+    </section>
+
+    <!--
+      服务目录：行式列表，每行指向自己的页面。
+      刻意不用卡片网格——10 张卡片会把「选择」变成视觉噪音，
+      而目录行能在一屏内被扫完，并且天然容纳每项不同的副标题。
+    -->
     <section class="section section--tight">
       <div class="wrap">
-        <div class="grid--aside">
-          <div v-reveal>
-            <h2>{{ t('services.intro.title') }}</h2>
-          </div>
-          <p class="lead" v-reveal="90">{{ t('services.intro.text') }}</p>
+        <div class="dirhead">
+          <span class="sheet-label">{{ t('services.directory.label') }}</span>
+          <span class="dirhead__note">{{ t('services.directory.note') }}</span>
         </div>
-      </div>
-    </section>
 
-    <div class="svcstrip">
-      <MarqueeStrip :items="items.map((i) => i.title)" :speed="54" :dots="true" />
-    </div>
+        <ol class="directory">
+          <li v-for="(s, i) in services" :key="s.id" class="directory__row" v-reveal="i * 30">
+            <RouterLink class="entry" :class="`entry--${s.accent}`" :to="link(`service:${s.slug}`)">
+              <span class="entry__num">{{ pad(i) }}</span>
 
-    <!-- 服务详情 -->
-    <section class="section section--soft">
-      <div class="wrap">
-        <div class="svcgrid">
-          <article v-for="(s, i) in items" :key="s.id" class="svc" v-reveal="(i % 2) * 60">
-            <div class="svc__head">
-              <div class="icon-box" :class="i % 3 === 1 ? 'icon-box--coral' : ''">
-                <AppIcon :name="ICONS[s.id] || 'box'" />
-              </div>
-              <span class="svc__idx">{{ pad(i) }}</span>
-            </div>
-            <h2 class="svc__title">{{ s.title }}</h2>
-            <p class="svc__text">{{ s.text }}</p>
-            <ul class="checklist">
-              <li v-for="(p, j) in s.points" :key="j">
-                <AppIcon name="check" :size="18" />
-                <span>{{ p }}</span>
-              </li>
-            </ul>
-          </article>
-        </div>
+              <span class="entry__body">
+                <span class="entry__brand">{{ s.brand }}</span>
+                <span class="entry__name">{{ s.name }}</span>
+                <span class="entry__tag">{{ s.tagline }}</span>
+              </span>
+
+              <span class="entry__meta">
+                <span class="entry__count">{{ s.features?.length || s.extra?.groups?.length || 0 }}</span>
+                <span class="entry__countLabel">{{ t('services.directory.items') }}</span>
+              </span>
+
+              <span class="entry__go" aria-hidden="true">
+                <AppIcon name="arrow" :size="18" />
+              </span>
+            </RouterLink>
+          </li>
+        </ol>
       </div>
     </section>
 
@@ -116,77 +125,187 @@ const pad = (i) => String(i + 1).padStart(2, '0')
 </template>
 
 <style scoped>
-.svcstrip {
-  padding-block: 0.4rem 2.6rem;
-  border-bottom: 1px solid var(--line);
-}
-.svcstrip :deep(.marquee__item) {
-  color: var(--navy-700);
-}
-
-.svcgrid {
-  display: grid;
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+/* ---------- 报头 ---------- */
+.masthead {
+  position: relative;
+  padding: clamp(2.6rem, 1.8rem + 3.6vw, 4.6rem) 0 clamp(2.4rem, 1.8rem + 3vw, 3.8rem);
+  background: var(--navy-950);
+  color: #fff;
   overflow: hidden;
-  /* 固定三列：9 条服务正好排成 3×3，不留空单元格。
-     用 auto-fit 会在部分宽度下退化成 3+3+3+... 的残缺行。 */
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.masthead__glow {
+  position: absolute;
+  top: -60%;
+  left: -8%;
+  width: 46rem;
+  height: 46rem;
+  background: radial-gradient(circle, rgba(250, 89, 89, 0.2), transparent 62%);
+  pointer-events: none;
+}
+.masthead__inner {
+  position: relative;
+  z-index: 1;
+}
+.masthead__title {
+  max-width: 26ch;
+  margin-bottom: 0.8rem;
+  color: #fff;
+  font-size: var(--fs-h1);
+}
+.masthead__text {
+  max-width: 60ch;
+  color: var(--on-dark);
+  font-size: var(--fs-lead);
 }
 
-/* 中等宽度：两列。9 条在偶数栏下必然空出 1 格，让末条跨满整行消除缺口。 */
-@media (max-width: 1080px) {
-  .svcgrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .svc:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 700px) {
-  .svcgrid {
-    grid-template-columns: 1fr;
-  }
-  .svc:last-child:nth-child(odd) {
-    grid-column: auto;
-  }
-}
-
-.svc {
-  padding: clamp(1.7rem, 1.3rem + 1.6vw, 2.5rem);
-  background: #fff;
-  transition: background 0.24s var(--ease);
-}
-.svc:hover {
-  background: #fdfefe;
-}
-.svc__head {
+.tally {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: clamp(1.6rem, 1rem + 2.4vw, 3.4rem);
+  margin: clamp(1.8rem, 1.4rem + 1.6vw, 2.6rem) 0 0;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--hair-dark);
 }
-.svc__idx {
-  font-size: 0.78rem;
+.tally__i dt {
+  margin-bottom: 0.2rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--line);
+  text-transform: uppercase;
+  color: var(--on-dark-muted);
+}
+.tally__i dd {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
   font-variant-numeric: tabular-nums;
 }
-.svc__title {
-  margin-bottom: 0.55rem;
-  font-size: 1.22rem;
+
+/* ---------- 目录 ---------- */
+.sheet-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
-.svc__text {
-  margin-bottom: 1.25rem;
-  font-size: 0.94rem;
-  color: var(--body);
+.dirhead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 2px solid var(--ink);
+}
+.dirhead__note {
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
-/* 流程：纵向连接线 */
+.directory {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.directory__row {
+  border-bottom: 1px solid var(--line);
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto 2.4rem;
+  align-items: center;
+  gap: clamp(1rem, 0.6rem + 1.4vw, 2rem);
+  padding: 1.15rem 0.6rem 1.15rem 0;
+  transition: background 0.2s var(--ease), padding-left 0.22s var(--ease);
+}
+.entry:hover {
+  padding-left: 0.6rem;
+  background: var(--bg-soft);
+}
+.entry__num {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--line);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.22s var(--ease);
+}
+.entry:hover .entry__num {
+  color: var(--coral);
+}
+.entry__body {
+  display: grid;
+  gap: 0.16rem;
+  min-width: 0;
+}
+.entry__brand {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--coral);
+}
+/*
+  强调色在深色底上必须整体提亮。
+  #b8791a（深琥珀）与 #3f6fb5（中蓝）是浅底时代的取值，在 #0e1728 上对比度不足 3:1，
+  0.7rem 的大写标签基本读不出来；改用深色主题对应的色阶，同时与方案页四货种配色对齐。
+*/
+.entry--sand .entry__brand {
+  color: var(--sand);
+}
+.entry--steel .entry__brand {
+  color: var(--navy-300);
+}
+.entry__name {
+  font-size: clamp(1.02rem, 0.96rem + 0.28vw, 1.18rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.entry__tag {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--body);
+}
+.entry__meta {
+  display: grid;
+  justify-items: end;
+  gap: 0.1rem;
+  padding-right: 0.4rem;
+}
+.entry__count {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.entry__countLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.entry__go {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 0.22s var(--ease), color 0.22s var(--ease);
+}
+.entry:hover .entry__go {
+  transform: translateX(5px);
+  color: var(--coral);
+}
+
+/* ---------- 流程 ---------- */
 .flow {
   list-style: none;
   margin: 0;
@@ -227,5 +346,18 @@ const pad = (i) => String(i + 1).padStart(2, '0')
   margin: 0;
   font-size: 0.9rem;
   color: var(--on-dark);
+}
+
+@media (max-width: 880px) {
+  .entry {
+    grid-template-columns: 2.6rem minmax(0, 1fr) 1.8rem;
+    align-items: start;
+  }
+  .entry__meta {
+    display: none;
+  }
+  .entry__go {
+    align-self: center;
+  }
 }
 </style>

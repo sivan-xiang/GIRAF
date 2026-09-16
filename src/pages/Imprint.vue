@@ -13,14 +13,14 @@ const addressText = computed(() => fullAddress(lang.value))
   <div>
     <section class="page-hero">
       <div class="wrap">
-        <nav class="crumbs" aria-label="Breadcrumb">
+        <nav class="crumbs rise" aria-label="Breadcrumb">
           <RouterLink :to="link('home')">{{ t('nav.home') }}</RouterLink>
           <span aria-hidden="true">/</span>
           <span>{{ t('imprint.hero.crumb') }}</span>
         </nav>
-        <span class="eyebrow">{{ t('imprint.hero.eyebrow') }}</span>
+        <span class="eyebrow rise" :style="{ '--d': '60ms' }">{{ t('imprint.hero.eyebrow') }}</span>
         <h1><RevealText :text="t('imprint.hero.title')" :step="70" /></h1>
-        <p>{{ t('imprint.hero.text') }}</p>
+        <p class="rise" :style="{ '--d': '200ms' }">{{ t('imprint.hero.text') }}</p>
       </div>
     </section>
 

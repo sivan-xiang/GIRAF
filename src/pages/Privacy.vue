@@ -15,14 +15,14 @@ const sections = computed(() => {
   <div>
     <section class="page-hero">
       <div class="wrap">
-        <nav class="crumbs" aria-label="Breadcrumb">
+        <nav class="crumbs rise" aria-label="Breadcrumb">
           <RouterLink :to="link('home')">{{ t('nav.home') }}</RouterLink>
           <span aria-hidden="true">/</span>
           <span>{{ t('privacy.hero.crumb') }}</span>
         </nav>
-        <span class="eyebrow">{{ t('privacy.hero.eyebrow') }}</span>
+        <span class="eyebrow rise" :style="{ '--d': '60ms' }">{{ t('privacy.hero.eyebrow') }}</span>
         <h1><RevealText :text="t('privacy.hero.title')" :step="70" /></h1>
-        <p>{{ t('privacy.hero.text') }}</p>
+        <p class="rise" :style="{ '--d': '200ms' }">{{ t('privacy.hero.text') }}</p>
       </div>
     </section>
 
